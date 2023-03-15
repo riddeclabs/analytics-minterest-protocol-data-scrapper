@@ -1,0 +1,49 @@
+version: 2.1
+
+orbs:
+  slack: circleci/slack@4.4.4
+  docker: circleci/docker@2.2.0
+
+jobs:
+  docker:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - run:
+          name: Set application version
+          command: |
+            VERSION=$(git describe --tags --always)
+            echo 'export VERSION='$VERSION >> $BASH_ENV
+            echo 'export DEPLOYMENT_SUCCEEDED_SLACK_TEMPLATE=$(cat .circleci/deployment-succeeded-slack-template.json)' >> $BASH_ENV
+            echo 'export JOB_FAILED_SLACK_TEMPLATE=$(cat .circleci/job-failed-slack-template.json)' >> $BASH_ENV
+            echo 'export GIT_COMMIT_DESC=$(git log --format=oneline -n 1 --pretty=format:%s $CIRCLE_SHA1)' >> $BASH_ENV
+
+            echo "Going to build the $VERSION app version..."
+      - setup_remote_docker
+      - docker/check
+      - docker/build:
+          image: teamminterest/bi-protocol-data-scrapper
+          tag: latest,$VERSION
+      - docker/push:
+          image: teamminterest/bi-protocol-data-scrapper
+          tag: latest,$VERSION
+      - slack/notify:
+          event: fail
+          channel: "data-scraping-jobs"
+          template: JOB_FAILED_SLACK_TEMPLATE
+      - slack/notify:
+          event: pass
+          channel: "data-scraping-jobs"
+          template: DEPLOYMENT_SUCCEEDED_SLACK_TEMPLATE
+
+workflows:
+  version: 2
+  main:
+    when:
+      equal: [main, << pipeline.git.branch >>]
+    jobs:
+      - docker:
+          context:
+            - dockerhub
+            - slack-secrets

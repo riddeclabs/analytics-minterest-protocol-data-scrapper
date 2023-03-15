@@ -1,0 +1,40 @@
+{
+  "blocks": [
+    {
+      "type": "header",
+      "text": {
+        "type": "plain_text",
+        "text": "BI Protocol Data Scrapper - A new app version has been built"
+      }
+    }
+  ],
+  "attachments": [
+    {
+      "color": "#36a64f",
+      "blocks": [
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*User:*\n${CIRCLE_USERNAME}"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "*Version:*\n${VERSION}"
+            }
+          ],
+          "text": {
+            "type": "mrkdwn",
+            "text": "<https://github.com/minterest-finance/${CIRCLE_PROJECT_REPONAME}/commit/${CIRCLE_SHA1}|_${GIT_COMMIT_DESC}_>"
+          },
+          "accessory": {
+            "type": "image",
+            "image_url": "https://i.pinimg.com/originals/f5/5e/80/f55e8059ea945abfd6804b887dd4a0af.gif",
+            "alt_text": "Docker"
+          }
+        }
+      ]
+    }
+  ]
+}

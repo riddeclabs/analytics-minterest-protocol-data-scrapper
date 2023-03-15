@@ -1,0 +1,21 @@
+[MESSAGES CONTROL]
+disable =
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    import-error,
+    relative-beyond-top-level,
+    wrong-import-order,
+    no-name-in-module,
+    redefined-builtin,
+    logging-fstring-interpolation,
+    bare-except,
+    broad-except,
+    too-few-public-methods,
+
+[FORMAT]
+max-line-length = 120
+good-names=e,db,id,df
+
+[SIMILARITIES]
+min-similarity-lines=10
