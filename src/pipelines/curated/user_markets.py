@@ -31,13 +31,13 @@ def __map_user_market_data__(market: dict) -> dict:
         "borrow_usd": round(float(market["userBorrowUSD"]), 3),
         "balance": round(float(market["underlyingBalance"]), 3),
         "net_apy": round(float(market["netApy"]), 2),
-        "annual_income_usd": round(float(market["annualIncome"]) / 10e18, 3),
+        "annual_income_usd": round(float(market["annualIncome"]) / 10e17, 3),
         "mnt_supply_apy": round(float(market["mntSupplyAPY"]), 3),
         "mnt_borrow_apy": round(float(market["mntBorrowAPY"]), 3),
         "collateral_status": market["collateralStatus"],
-        "collateral_usd": round(float(market["userMarketCollateralUSD"]) / 10e18, 3),
-        "apy": round(float(market["apy"]) / 10e16, 3),
-        "apr": round(float(market["apr"]) / 10e16, 3),
+        "collateral_usd": round(float(market["userMarketCollateralUSD"]) / 10e17, 3),
+        "apy": round(float(market["apy"]) / 10e15, 3),
+        "apr": round(float(market["apr"]) / 10e15, 3),
     }
 
 

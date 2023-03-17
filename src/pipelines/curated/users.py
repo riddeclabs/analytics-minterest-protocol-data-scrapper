@@ -25,23 +25,23 @@ def __map_users(df: pd.DataFrame) -> pd.DataFrame:
 
 def __map_user_data(user: dict) -> dict:
     result = {
-        "total_net_apy": round(float(user["totalNetApy"]), 3),
-        "net_interest": round(float(user["netInterest"]), 3),
-        "emissions": round(float(user["emissions"]), 3),
-        "gov_reward": round(float(user["govReward"]), 3),
-        "total_supply_usd": round(float(user["userTotalSupplyUSD"]), 3),
-        "total_borrow_usd": round(float(user["userTotalBorrowUSD"]), 3),
-        "total_collateral_usd": round(float(user["userTotalCollateralUSD"]), 3),
-        "mnt_withdrawable_usd": round(float(user["userMntWithdrawableUSD"]) / 10e18, 3),
-        "buy_back_rewards_usd": round(float(user["userBuyBackRewardsUSD"]) / 10e18, 3),
+        "total_net_apy": round(float(user["totalNetApy"]), 4),
+        "net_interest": round(float(user["netInterest"]), 4),
+        "emissions": round(float(user["emissions"]), 4),
+        "gov_reward": round(float(user["govReward"]), 4),
+        "total_supply_usd": round(float(user["userTotalSupplyUSD"]), 4),
+        "total_borrow_usd": round(float(user["userTotalBorrowUSD"]), 4),
+        "total_collateral_usd": round(float(user["userTotalCollateralUSD"]), 4),
+        "mnt_withdrawable_usd": round(float(user["userMntWithdrawableUSD"]) / 10e17, 4),
+        "buy_back_rewards_usd": round(float(user["userBuyBackRewardsUSD"]) / 10e18, 4),
         "participating": user["participating"],
         "is_whitelisted": user["isWhitelisted"],
-        "mnt_apy": round(float(user["mntAPY"]), 3),
-        "collateral_ratio": round(float(user["collateralRatio"]), 3),
-        "max_collateral_ratio": round(float(user["maxCollateralRatio"]), 3),
+        "mnt_apy": round(float(user["mntAPY"]), 4),
+        "collateral_ratio": round(float(user["collateralRatio"]), 4),
+        "max_collateral_ratio": round(float(user["maxCollateralRatio"]), 4),
         "loyalty_group": user["userLoyaltyGroup"],
-        "loyalty_factor": round(float(user["userLoyaltyFactor"]), 3),
-        "total_vested": round(float(user["vesting"]["totalAmount"]), 3),
+        "loyalty_factor": round(float(user["userLoyaltyFactor"]), 4),
+        "total_vesting_locked": round(float(user["vesting"]["totalAmount"]) * 10, 4),
     }
 
     # Make the table wide by appending the market name to every key of the market value within user stats

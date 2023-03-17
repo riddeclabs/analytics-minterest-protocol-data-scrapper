@@ -23,7 +23,7 @@ def __map_market_data(market: dict) -> dict:
     values = {}
 
     for key in market["economic"]:
-        values[key] = round(float(market["economic"][key]), 2)
+        values[key] = round(float(market["economic"][key]), 4)
 
     return {
         "symbol": market["meta"]["symbol"],

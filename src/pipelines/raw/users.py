@@ -8,6 +8,8 @@ from tqdm import tqdm
 from config import API_URL
 from utils import Tables, sql, types
 
+from .oracle_prices import __get_oracle_prices__
+
 
 def __get_all_user_addresses() -> dict:
     df = sql.read("SELECT DISTINCT user_address FROM indexer.user_market_state")
@@ -15,13 +17,17 @@ def __get_all_user_addresses() -> dict:
     return df["user_address"].to_list()
 
 
-def __get_raw_user_data(address: str) -> dict:
-    response = requests.get(f"{API_URL}/user/data/{address}", timeout=10)
+def __get_raw_user_data(address: str, mnt_price: str) -> dict:
+    user_data = requests.get(f"{API_URL}/user/data/{address}", timeout=10).json()
+    withdraw_data = requests.get(
+        f"{API_URL}/user/mnt/withdraw/{address}", timeout=10
+    ).json()
 
-    result = response.json()
-    result["user_address"] = address
+    user_data["user_address"] = address
+    user_data["withdraw"] = withdraw_data
+    user_data["mnt_price_usd"] = mnt_price
 
-    return result
+    return user_data
 
 
 def __save_raw_users(addresses: list[str], users: list[dict]) -> int:
@@ -42,8 +48,10 @@ def run_raw_users_pipeline():
     addresses = __get_all_user_addresses()
     logging.info(f"Found {len(addresses)} user addresses in DB")
 
+    mnt_price = __get_oracle_prices__()["mntOraclePriceUSD"]
+
     users = [
-        __get_raw_user_data(address)
+        __get_raw_user_data(address, mnt_price)
         for address in tqdm(addresses, desc="Fetching users data")
     ]
 
