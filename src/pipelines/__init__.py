@@ -1,5 +1,6 @@
 from .curated import (
     run_curated_markets_pipeline,
+    run_curated_oracle_prices_pipeline,
     run_curated_user_markets_pipeline,
     run_curated_users_pipeline,
 )

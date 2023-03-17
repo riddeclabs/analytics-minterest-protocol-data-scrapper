@@ -24,6 +24,13 @@ def __map_users(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def __map_user_data(user: dict) -> dict:
+    mnt_price = float(user.get("mntPriceUSD", "2.0"))
+    total_earned_mnt = (
+        float(user["withdraw"]["mntTotalBalance"]) / 10e17
+        if "withdraw" in user
+        else None
+    )
+
     result = {
         "total_net_apy": round(float(user["totalNetApy"]), 4),
         "net_interest": round(float(user["netInterest"]), 4),
@@ -32,8 +39,11 @@ def __map_user_data(user: dict) -> dict:
         "total_supply_usd": round(float(user["userTotalSupplyUSD"]), 4),
         "total_borrow_usd": round(float(user["userTotalBorrowUSD"]), 4),
         "total_collateral_usd": round(float(user["userTotalCollateralUSD"]), 4),
+        "mnt_withdrawable": round(
+            float(user["userMntWithdrawableUSD"]) / 10e17 / mnt_price, 4
+        ),
         "mnt_withdrawable_usd": round(float(user["userMntWithdrawableUSD"]) / 10e17, 4),
-        "buy_back_rewards_usd": round(float(user["userBuyBackRewardsUSD"]) / 10e18, 4),
+        "buy_back_rewards_usd": round(float(user["userBuyBackRewardsUSD"]) / 10e17, 4),
         "participating": user["participating"],
         "is_whitelisted": user["isWhitelisted"],
         "mnt_apy": round(float(user["mntAPY"]), 4),
@@ -42,6 +52,10 @@ def __map_user_data(user: dict) -> dict:
         "loyalty_group": user["userLoyaltyGroup"],
         "loyalty_factor": round(float(user["userLoyaltyFactor"]), 4),
         "total_vesting_locked": round(float(user["vesting"]["totalAmount"]) * 10, 4),
+        "total_earned_mnt": round(total_earned_mnt, 4) if total_earned_mnt else None,
+        "total_earned_mnt_usd": round(total_earned_mnt * mnt_price, 4)
+        if total_earned_mnt
+        else None,
     }
 
     # Make the table wide by appending the market name to every key of the market value within user stats

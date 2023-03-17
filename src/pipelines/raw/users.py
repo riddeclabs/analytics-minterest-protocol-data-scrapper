@@ -25,7 +25,7 @@ def __get_raw_user_data(address: str, mnt_price: str) -> dict:
 
     user_data["user_address"] = address
     user_data["withdraw"] = withdraw_data
-    user_data["mnt_price_usd"] = mnt_price
+    user_data["mntPriceUSD"] = mnt_price
 
     return user_data
 
