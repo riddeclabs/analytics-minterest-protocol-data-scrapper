@@ -46,7 +46,7 @@ def __map_user_data(user: dict) -> dict:
         "buy_back_rewards_usd": round(float(user["userBuyBackRewardsUSD"]) / 10e17, 4),
         "participating": user["participating"],
         "is_whitelisted": user["isWhitelisted"],
-        "mnt_apy": round(float(user["mntAPY"]), 4),
+        "governance_reward_apy": round(float(user["mntAPY"]), 4),
         "collateral_ratio": round(float(user["collateralRatio"]), 4),
         "max_collateral_ratio": round(float(user["maxCollateralRatio"]), 4),
         "loyalty_group": user["userLoyaltyGroup"],
