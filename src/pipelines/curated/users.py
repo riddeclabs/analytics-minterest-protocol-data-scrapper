@@ -51,7 +51,7 @@ def __map_user_data(user: dict) -> dict:
         "max_collateral_ratio": round(float(user["maxCollateralRatio"]), 4),
         "loyalty_group": user["userLoyaltyGroup"],
         "loyalty_factor": round(float(user["userLoyaltyFactor"]), 4),
-        "total_vesting_locked": round(float(user["vesting"]["totalAmount"]) * 10, 4),
+        "total_vesting_locked": round(float(user["vesting"]["totalAmount"]), 4),
         "total_earned_mnt": round(total_earned_mnt, 4) if total_earned_mnt else None,
         "total_earned_mnt_usd": round(total_earned_mnt * mnt_price, 4)
         if total_earned_mnt
