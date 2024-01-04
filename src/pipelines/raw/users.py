@@ -10,6 +10,8 @@ from utils import Tables, sql, types
 
 from .oracle_prices import __get_oracle_prices__
 
+session = requests.session()
+
 
 def __get_all_user_addresses() -> dict:
     df = sql.read(f"SELECT DISTINCT user_address FROM {INDEXER_DB_NAME}.user_market_state")
@@ -18,8 +20,8 @@ def __get_all_user_addresses() -> dict:
 
 
 def __get_raw_user_data(address: str, mnt_price: str) -> dict:
-    user_data = requests.get(f"{API_URL}/user/data/{address}", timeout=10).json()
-    withdraw_data = requests.get(
+    user_data = session.get(f"{API_URL}/user/data/{address}", timeout=10).json()
+    withdraw_data = session.get(
         f"{API_URL}/user/mnt/withdraw/{address}", timeout=10
     ).json()
 
