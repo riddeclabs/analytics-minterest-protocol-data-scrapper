@@ -1,9 +1,12 @@
 import logging
 
+import coloredlogs
+
 import pipelines
+from config import API_URL, INDEXER_DB_NAME, SQL_CONNECTION_STRING
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s")
-
+coloredlogs.install()
+logging.info(f"Going to read data from '{API_URL}' and indexer db '{INDEXER_DB_NAME}' and write it into '{SQL_CONNECTION_STRING.split('@')[-1]}'")
 
 if __name__ == "__main__":
     pipelines.run_raw_markets_pipeline()

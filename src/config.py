@@ -7,5 +7,6 @@ if env.get_optional("SECRETS"):
         env.set_env(key, value)
 
 
-API_URL = env.get_optional("API_URL", "https://app.minterest.com/api")
+INDEXER_DB_NAME = env.get_required("INDEXER_DB_NAME")
+API_URL = env.get_required("API_URL")
 SQL_CONNECTION_STRING = env.get_required("SQL_CONNECTION_STRING")

@@ -5,14 +5,14 @@ import pandas as pd
 import requests
 from tqdm import tqdm
 
-from config import API_URL
+from config import API_URL, INDEXER_DB_NAME
 from utils import Tables, sql, types
 
 from .oracle_prices import __get_oracle_prices__
 
 
 def __get_all_user_addresses() -> dict:
-    df = sql.read("SELECT DISTINCT user_address FROM indexer.user_market_state")
+    df = sql.read(f"SELECT DISTINCT user_address FROM {INDEXER_DB_NAME}.user_market_state")
 
     return df["user_address"].to_list()
 

@@ -30,11 +30,11 @@ jobs:
           tag: latest,$VERSION
       - slack/notify:
           event: fail
-          channel: "data-scraping-jobs"
+          channel: "#minterest-analytics-jobs"
           template: JOB_FAILED_SLACK_TEMPLATE
       - slack/notify:
           event: pass
-          channel: "data-scraping-jobs"
+          channel: "#minterest-analytics-jobs"
           template: DEPLOYMENT_SUCCEEDED_SLACK_TEMPLATE
 
 workflows:

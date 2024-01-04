@@ -13,7 +13,7 @@
   "editor.formatOnSave": true,
   "python.linting.enabled": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": true
+    "source.organizeImports": "explicit"
   },
   "python.testing.pytestArgs": ["."],
   "python.testing.unittestEnabled": false,
