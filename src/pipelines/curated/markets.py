@@ -9,6 +9,10 @@ def __map_markets(df: pd.DataFrame) -> pd.DataFrame:
     results = []
 
     for record in df.to_dict("records"):
+        if "error" in record["data"]:
+            logging.info(f"Found failed market query: {record}")
+            continue
+
         for market in record["data"]["markets"]:
             result = {"date": record["date"]} | __map_market_data(market)
             results.append(result)

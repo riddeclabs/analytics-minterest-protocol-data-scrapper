@@ -9,6 +9,10 @@ def __map_oracle_prices(df: pd.DataFrame) -> pd.DataFrame:
     results = []
 
     for record in df.to_dict("records"):
+        if "error" in record["data"]:
+            logging.info(f"Found failed oracle price query: {record}")
+            continue
+
         result = {"date": record["date"]} | __map_price_data(record["data"])
         results.append(result)
 

@@ -2,15 +2,12 @@ import logging
 from datetime import datetime
 
 import pandas as pd
-import requests
 from tqdm import tqdm
 
-from config import API_URL, INDEXER_DB_NAME
-from utils import Tables, sql, types
+from config import INDEXER_DB_NAME
+from utils import DataFetcher, Tables, sql, types
 
 from .oracle_prices import __get_oracle_prices__
-
-session = requests.session()
 
 
 def __get_all_user_addresses() -> dict:
@@ -19,15 +16,21 @@ def __get_all_user_addresses() -> dict:
     return df["user_address"].to_list()
 
 
-def __get_raw_user_data(address: str, mnt_price: str) -> dict:
-    user_data = session.get(f"{API_URL}/user/data/{address}", timeout=10).json()
-    withdraw_data = session.get(
-        f"{API_URL}/user/mnt/withdraw/{address}", timeout=10
-    ).json()
+def __get_raw_user_data(data_fetcher: DataFetcher, address: str, oracle_prices: dict) -> dict:
+    mintyMarket = next(filter(lambda x: x["symbol"] == "mWMNT", oracle_prices["markets"]), None)
+    
+    user_data = data_fetcher.fetch(f"user/data/{address}")
+    withdraw_data = data_fetcher.fetch(f"user/mnt/withdraw/{address}")
 
     user_data["user_address"] = address
     user_data["withdraw"] = withdraw_data
-    user_data["mntPriceUSD"] = mnt_price
+    user_data["mntPriceUSD"] = oracle_prices["mntOraclePriceUSD"]
+
+    if mintyMarket:
+        user_data["incentivePriceUSD"] = mintyMarket["oraclePriceUSD"]
+
+        incentive_withdraw_data = data_fetcher.fetch(f"user/mantle/withdraw/{address}")
+        user_data["incentiveWithdraw"] = incentive_withdraw_data
 
     return user_data
 
@@ -50,10 +53,12 @@ def run_raw_users_pipeline():
     addresses = __get_all_user_addresses()
     logging.info(f"Found {len(addresses)} user addresses in DB")
 
-    mnt_price = __get_oracle_prices__()["mntOraclePriceUSD"]
+    data_fetcher = DataFetcher(retries=20)
+
+    oracle_prices = __get_oracle_prices__(data_fetcher)
 
     users = [
-        __get_raw_user_data(address, mnt_price)
+        __get_raw_user_data(data_fetcher, address, oracle_prices)
         for address in tqdm(addresses, desc="Fetching users data")
     ]
 

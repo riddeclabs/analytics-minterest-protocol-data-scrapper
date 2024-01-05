@@ -2,16 +2,14 @@ import logging
 from datetime import datetime
 
 import pandas as pd
-import requests
 
-from config import API_URL
-from utils import Tables, sql, types
+from utils import DataFetcher, Tables, sql, types
 
 
-def __get_oracle_prices__() -> dict:
-    result = requests.get(f"{API_URL}/utils/oracle-price", timeout=10)
+def __get_oracle_prices__(data_fetcher: DataFetcher) -> dict:
+    oracle_prices = data_fetcher.fetch("utils/oracle-price")
 
-    return result.json()
+    return oracle_prices
 
 
 def __save_oracle_prices(markets: dict):
@@ -27,7 +25,9 @@ def __save_oracle_prices(markets: dict):
 def run_raw_oracle_prices_pipeline():
     logging.info("Running raw oracle prices pipelines")
 
-    markets = __get_oracle_prices__()
-    __save_oracle_prices(markets)
+    data_fetcher = DataFetcher()
+    oracle_prices = __get_oracle_prices__(data_fetcher)
+
+    __save_oracle_prices(oracle_prices)
 
     logging.info("Successfully saved oracle prices into DB")

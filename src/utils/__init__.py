@@ -1,6 +1,7 @@
 from sqlalchemy import types
 
 from . import env, sql
+from .data_fetcher import DataFetcher
 
 
 class Tables:

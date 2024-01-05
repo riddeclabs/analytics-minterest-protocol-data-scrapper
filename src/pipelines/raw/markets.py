@@ -2,16 +2,8 @@ import logging
 from datetime import datetime
 
 import pandas as pd
-import requests
 
-from config import API_URL
-from utils import Tables, sql, types
-
-
-def __get_raw_markets() -> dict:
-    result = requests.get(f"{API_URL}/markets", timeout=10)
-
-    return result.json()
+from utils import DataFetcher, Tables, sql, types
 
 
 def __save_raw_markets(markets: dict):
@@ -27,7 +19,9 @@ def __save_raw_markets(markets: dict):
 def run_raw_markets_pipeline():
     logging.info("Running raw markets pipelines")
 
-    markets = __get_raw_markets()
+    data_fetcher = DataFetcher()
+    markets = data_fetcher.fetch("markets")
+
     __save_raw_markets(markets)
 
     logging.info(f"Successfully saved {len(markets)} markets into DB")
