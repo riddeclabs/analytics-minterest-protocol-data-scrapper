@@ -11,6 +11,10 @@ def __map_users(df: pd.DataFrame) -> pd.DataFrame:
     results = []
 
     for record in df.to_dict("records"):
+        if "error" in record["data"] or "error" in record["data"]["withdraw"]:
+            logging.info(f"Found failed user query: {record}")
+            continue
+
         result = {
             "date": record["date"],
             "user_address": record["user_address"],
