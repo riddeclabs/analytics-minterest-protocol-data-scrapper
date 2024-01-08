@@ -16,16 +16,23 @@ class DataFetcher:
 
     def fetch(self, url: str) -> dict:
         for _ in range(self.__retries - self.__retry_no):
-            response = self.__session.get(f"{self.__api_url}/{url}", timeout=10)
-            
-            if response.status_code > 299:
+            try:
+                response = self.__session.get(f"{self.__api_url}/{url}", timeout=10)
+                if response.status_code > 299:
+                    self.__retry_no += 1
+                    logger.error(
+                        f"Failed for the {self.__retry_no} time to fetch data from {url}. Sleeping for 10 seconds before retry. " +
+                        f"Status code {response.status_code}. Response body: {response.text}. "
+                    )
+                    time.sleep(10)
+                else:
+                    return response.json()
+            except Exception as e:
                 self.__retry_no += 1
                 logger.error(
                     f"Failed for the {self.__retry_no} time to fetch data from {url}. Sleeping for 10 seconds before retry. " +
-                    f"Status code {response.status_code}. Response body: {response.text}. "
+                    f"Exception: {e}"
                 )
                 time.sleep(10)
-            else:
-                return response.json()
 
         raise Exception(f"Failed to fetch data from {url} within {self.__retries} retries.")

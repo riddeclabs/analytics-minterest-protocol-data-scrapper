@@ -1,10 +1,11 @@
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
 import pandas as pd
 from tqdm import tqdm
 
-from config import INDEXER_DB_NAME
+from config import INDEXER_DB_NAME, MAX_TREADS_FOR_USERS_FETCHING
 from utils import DataFetcher, Tables, sql, types
 
 from .oracle_prices import __get_oracle_prices__
@@ -57,10 +58,17 @@ def run_raw_users_pipeline():
 
     oracle_prices = __get_oracle_prices__(data_fetcher)
 
-    users = [
-        __get_raw_user_data(data_fetcher, address, oracle_prices)
-        for address in tqdm(addresses, desc="Fetching users data")
-    ]
+    with ThreadPoolExecutor(max_workers=MAX_TREADS_FOR_USERS_FETCHING) as executor:
+        users = list(
+            tqdm(
+                executor.map(
+                    lambda address: __get_raw_user_data(data_fetcher, address, oracle_prices),
+                    addresses,
+                ),
+                total=len(addresses),
+                desc="Fetching users data",
+            )
+        )
 
     __save_raw_users(addresses, users)
 

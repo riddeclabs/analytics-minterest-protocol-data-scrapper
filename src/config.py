@@ -10,3 +10,4 @@ if env.get_optional("SECRETS"):
 INDEXER_DB_NAME = env.get_required("INDEXER_DB_NAME")
 API_URL = env.get_required("API_URL")
 SQL_CONNECTION_STRING = env.get_required("SQL_CONNECTION_STRING")
+MAX_TREADS_FOR_USERS_FETCHING = env.get_optional("MAX_TREADS_FOR_USERS_FETCHING", 10)
