@@ -62,6 +62,14 @@ def __map_user_data(user: dict) -> dict:
         else None,
     }
 
+    # Do it for mantle market only
+    if "incentivePriceUSD" in user:
+        incentive_price = float(user["incentivePriceUSD"])
+        total_earned_incentive = float(user["incentiveWithdraw"]["userWithdrawableBalance"]) / 10e17
+
+        result["total_earned_incentive"] = round(total_earned_incentive, 4)
+        result["total_earned_incentive_usd"] = round(total_earned_incentive * incentive_price, 4)
+
     # Make the table wide by appending the market name to every key of the market value within user stats
     # e.g, mweth_supply_usd, mwbtc_supply_usd, etc.
     for market in user["userMarkets"]:

@@ -27,7 +27,7 @@ def __map_user_markets(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def __map_user_market_data__(market: dict) -> dict:
-    return {
+    result = {
         "symbol": market["symbol"],
         "supply": round(float(market["userSupplyUnderlying"]), 3),
         "supply_usd": round(float(market["userSupplyUSD"]), 3),
@@ -43,6 +43,13 @@ def __map_user_market_data__(market: dict) -> dict:
         "apy": round(float(market["apy"]) / 10e15, 3),
         "apr": round(float(market["apr"]) / 10e15, 3),
     }
+
+    # Do it for mantle market only
+    if "mantleSupplyAPY" in market:
+        result["mantle_supply_apy"] = round(float(market["mantleSupplyAPY"]), 3)
+        result["mantle_borrow_apy"] = round(float(market["mantleBorrowAPY"]), 3)
+
+    return result
 
 
 def run_curated_user_markets_pipeline():

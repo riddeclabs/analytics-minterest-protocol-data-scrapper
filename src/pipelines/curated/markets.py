@@ -29,7 +29,7 @@ def __map_market_data(market: dict) -> dict:
     for key in market["economic"]:
         values[key] = round(float(market["economic"][key]), 4)
 
-    return {
+    result = {
         "symbol": market["meta"]["symbol"],
         "number_of_suppliers": market["statistics"]["numberOfSuppliers"],
         "number_of_borrowers": market["statistics"]["numberOfBorrowers"],
@@ -49,6 +49,13 @@ def __map_market_data(market: dict) -> dict:
         "reserve_rate": values["reserveRate"],
         "utilisation_factor": values["utilisationFactor"],
     }
+
+    # Do it for mantle market only
+    if "marketMantleSupplyAPY" in values:
+        result["mantle_supply_apy"] = values["marketMantleSupplyAPY"]
+        result["mantle_borrow_apy"] = values["marketMantleBorrowAPY"]
+
+    return result
 
 
 def run_curated_markets_pipeline():
@@ -73,7 +80,7 @@ def run_curated_markets_pipeline():
         "symbol": types.NVARCHAR(5),
     }
 
-    sql.save(markets, "markets_history", dtype=dtype)
-    sql.save(latest_markets, "markets_latest", dtype=dtype, replace=True)
+    sql.save(markets, Tables.MARKETS_HISTORY, dtype=dtype)
+    sql.save(latest_markets, Tables.MARKETS_LATEST, dtype=dtype, replace=True)
 
     logging.info(f"Successfully saved {len(markets)} market records into curated DB")
