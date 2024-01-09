@@ -5,7 +5,8 @@ from datetime import datetime
 import pandas as pd
 from tqdm import tqdm
 
-from config import INDEXER_DB_NAME, MAX_TREADS_FOR_USERS_FETCHING
+from config import (INDEXER_DB_NAME, MAX_TREADS_FOR_USERS_FETCHING,
+                    RETRIES_COUNT_FOR_USERS_FETCHING)
 from utils import DataFetcher, Tables, sql, types
 
 from .oracle_prices import __get_oracle_prices__
@@ -54,7 +55,7 @@ def run_raw_users_pipeline():
     addresses = __get_all_user_addresses()
     logging.info(f"Found {len(addresses)} user addresses in DB")
 
-    data_fetcher = DataFetcher(retries=20)
+    data_fetcher = DataFetcher(retries=RETRIES_COUNT_FOR_USERS_FETCHING)
 
     oracle_prices = __get_oracle_prices__(data_fetcher)
 
