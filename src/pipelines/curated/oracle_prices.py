@@ -31,12 +31,13 @@ def __map_price_data(prices: dict) -> dict:
     return result
 
 
-def run_curated_oracle_prices_pipeline():
+def run_curated_oracle_prices_pipeline(max_date: pd.Timestamp = None):
     logging.info("Running curated oracle prices pipeline")
 
     raw = sql.get_unprocessed_raw_data(
         table_name=Tables.ORACLE_PRICES,
         raw_table_name=Tables.RAW_ORACLE_PRICES,
+        max_date=max_date,
     )
 
     if raw.empty:

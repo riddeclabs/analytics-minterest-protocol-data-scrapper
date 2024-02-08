@@ -84,12 +84,13 @@ def __map_user_data(user: dict) -> dict:
     return result
 
 
-def run_curated_users_pipeline():
+def run_curated_users_pipeline(max_date: pd.Timestamp = None):
     logging.info("Running curated users pipeline")
 
     raw = sql.get_unprocessed_raw_data(
         table_name=Tables.USERS_HISTORY,
         raw_table_name=Tables.RAW_USERS,
+        max_date=max_date,
     )
 
     if raw.empty:

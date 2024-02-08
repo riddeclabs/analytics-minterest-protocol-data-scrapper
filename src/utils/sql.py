@@ -4,6 +4,7 @@ import pandas as pd
 from sqlalchemy import create_engine, inspect
 
 from config import SQL_CONNECTION_STRING
+import logging
 
 __ENGINE = create_engine(SQL_CONNECTION_STRING)
 
@@ -37,13 +38,16 @@ def get_latest_date(table_name: str) -> pd.Timestamp:
     return pd.Timestamp.min
 
 
-def get_unprocessed_raw_data(table_name: str, raw_table_name: str) -> pd.DataFrame:
+def get_unprocessed_raw_data(table_name: str, raw_table_name: str, max_date: pd.Timestamp = None) -> pd.DataFrame:
     latest_date = get_latest_date(table_name) + pd.Timedelta(1, "hour")
+    logging.info(f"Getting unprocessed data from {raw_table_name} since {latest_date} to {max_date or 'now'}")
 
-    df = pd.read_sql(
-        f"SELECT * FROM {raw_table_name} WHERE date > '{latest_date}'", con=__ENGINE
-    )
+    sql = f"SELECT * FROM {raw_table_name} WHERE date > '{latest_date}'"
 
+    if max_date:
+        sql += f" and date < '{max_date}'"
+
+    df = pd.read_sql(sql, con=__ENGINE)
     df["data"] = df["data"].map(json.loads)
 
     return df

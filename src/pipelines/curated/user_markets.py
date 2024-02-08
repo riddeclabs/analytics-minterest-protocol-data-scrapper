@@ -52,12 +52,13 @@ def __map_user_market_data__(market: dict) -> dict:
     return result
 
 
-def run_curated_user_markets_pipeline():
-    logging.info("Running curated users pipeline")
+def run_curated_user_markets_pipeline(max_date: pd.Timestamp = None):
+    logging.info("Running curated user markets pipeline")
 
     raw = sql.get_unprocessed_raw_data(
         table_name=Tables.USER_MARKETS_HISTORY,
         raw_table_name=Tables.RAW_USERS,
+        max_date=max_date,
     )
 
     if raw.empty:
