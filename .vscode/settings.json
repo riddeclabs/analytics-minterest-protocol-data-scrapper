@@ -8,14 +8,13 @@
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
   "files.insertFinalNewline": true,
-  "python.formatting.provider": "black",
-  "python.linting.pylintEnabled": true,
   "editor.formatOnSave": true,
-  "python.linting.enabled": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit"
   },
-  "python.testing.pytestArgs": ["."],
+  "python.testing.pytestArgs": [
+    "."
+  ],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "debug.internalConsoleOptions": "neverOpen"

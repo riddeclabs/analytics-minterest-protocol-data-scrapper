@@ -2,7 +2,9 @@ import logging
 
 import pandas as pd
 
-from utils import Tables, sql, types
+from utils import Tables, athena, Types, sql
+from itertools import groupby
+from tqdm.auto import tqdm
 
 from .user_markets import __map_user_market_data__
 
@@ -22,7 +24,8 @@ def __map_users(df: pd.DataFrame) -> pd.DataFrame:
         results.append(result)
 
     df = pd.DataFrame(results)
-    df["date"] = df["date"].dt.strftime("%y-%m-%d %H:00:00")
+    df.insert(1, "time", pd.to_datetime(df["date"]))
+    df["date"] = df["time"].dt.floor("d")
 
     return df.drop_duplicates(["date", "user_address"], keep="first")
 
@@ -57,18 +60,22 @@ def __map_user_data(user: dict) -> dict:
         "loyalty_factor": round(float(user["userLoyaltyFactor"]), 4),
         "total_vesting_locked": round(float(user["vesting"]["totalAmount"]), 4),
         "total_earned_mnt": round(total_earned_mnt, 4) if total_earned_mnt else None,
-        "total_earned_mnt_usd": round(total_earned_mnt * mnt_price, 4)
-        if total_earned_mnt
-        else None,
+        "total_earned_mnt_usd": (
+            round(total_earned_mnt * mnt_price, 4) if total_earned_mnt else None
+        ),
     }
 
     # Do it for mantle market only
     if "incentivePriceUSD" in user:
         incentive_price = float(user["incentivePriceUSD"])
-        total_earned_incentive = float(user["incentiveWithdraw"]["userWithdrawableBalance"]) / 10e17
+        total_earned_incentive = (
+            float(user["incentiveWithdraw"]["userWithdrawableBalance"]) / 10e17
+        )
 
         result["total_earned_incentive"] = round(total_earned_incentive, 4)
-        result["total_earned_incentive_usd"] = round(total_earned_incentive * incentive_price, 4)
+        result["total_earned_incentive_usd"] = round(
+            total_earned_incentive * incentive_price, 4
+        )
 
     # Make the table wide by appending the market name to every key of the market value within user stats
     # e.g, mweth_supply_usd, mwbtc_supply_usd, etc.
@@ -85,29 +92,32 @@ def __map_user_data(user: dict) -> dict:
 
 
 def run_curated_users_pipeline(max_date: pd.Timestamp = None):
-    logging.info("Running curated users pipeline")
+    logging.info(f"Running curated users pipeline with max_date = {max_date}")
 
-    raw = sql.get_unprocessed_raw_data(
-        table_name=Tables.USERS_HISTORY,
-        raw_table_name=Tables.RAW_USERS,
-        max_date=max_date,
-    )
+    latest_date = sql.get_latest_date(Tables.USERS_HISTORY, date_column="time")
+    all_dates = athena.get_all_dates(Tables.RAW_USERS, min_date=latest_date)
+    dates = [
+        max(group) for _, group in groupby(sorted(all_dates), key=lambda x: x.date())
+    ]
 
-    if raw.empty:
+    if not dates:
         logging.info("No raw users found to process")
         return
 
-    dates = raw["date"].unique()
-    logging.info(f"Found {len(dates)} raw users records to process from {dates[0]}")
+    logging.info(
+        f"Found {len(dates)} user records to process from {dates[0]} to {dates[-1]}"
+    )
 
-    users = __map_users(raw)
-    latest_users = users.drop_duplicates(["user_address"], keep="last")
-    dtype = {
-        "date": types.DATETIME,
-        "user_address": types.NVARCHAR(64),
-    }
+    for date in tqdm(dates):
+        raw = athena.read_partition(Tables.RAW_USERS, date)
+        users = __map_users(raw)
+        dtype = {
+            "date": Types.Date,
+            "time": Types.DateTime,
+        }
 
-    sql.save(users, Tables.USERS_HISTORY, dtype=dtype)
-    sql.save(latest_users, Tables.USERS_LATEST, dtype=dtype, replace=True)
+        sql.save(users, Tables.USERS_HISTORY, dtype=dtype, replace_by_date=True)
 
-    logging.info(f"Successfully saved {len(users)} user records into curated DB")
+    sql.save(users, Tables.USERS_LATEST, dtype=dtype, replace=True)
+
+    logging.info(f"Successfully saved {len(dates)} user records into curated DB")

@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from utils import Tables, sql, types
+from utils import Tables, sql, Types
 
 
 def __map_oracle_prices(df: pd.DataFrame) -> pd.DataFrame:
@@ -17,7 +17,8 @@ def __map_oracle_prices(df: pd.DataFrame) -> pd.DataFrame:
         results.append(result)
 
     df = pd.DataFrame(results)
-    df["date"] = df["date"].dt.strftime("%y-%m-%d %H:00:00")
+    df["date"] = pd.to_datetime(df["date"])
+    df["date"] = df["date"].dt.floor("H")
 
     return df.drop_duplicates(["date"], keep="first")
 
@@ -50,9 +51,7 @@ def run_curated_oracle_prices_pipeline(max_date: pd.Timestamp = None):
     )
 
     oracle_prices = __map_oracle_prices(raw)
-    dtype = {"date": types.DATETIME}
-
-    sql.save(oracle_prices, Tables.ORACLE_PRICES, dtype=dtype)
+    sql.save(oracle_prices, Tables.ORACLE_PRICES)
 
     logging.info(
         f"Successfully saved {len(oracle_prices)} oracle price records into curated DB"

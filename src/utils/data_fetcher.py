@@ -7,6 +7,7 @@ from config import API_URL
 
 logger = logging.getLogger(__name__)
 
+
 class DataFetcher:
     def __init__(self, api_url: str = API_URL, retries: int = 3):
         self.__api_url = api_url
@@ -21,8 +22,8 @@ class DataFetcher:
                 if response.status_code > 299:
                     self.__retry_no += 1
                     logger.error(
-                        f"Failed for the {self.__retry_no} time to fetch data from {url}. Sleeping for 10 seconds before retry. " +
-                        f"Status code {response.status_code}. Response body: {response.text}. "
+                        f"Failed for the {self.__retry_no} time to fetch data from {url}. Sleeping for 10 seconds before retry. "
+                        + f"Status code {response.status_code}. Response body: {response.text}. "
                     )
                     time.sleep(10)
                 else:
@@ -30,9 +31,11 @@ class DataFetcher:
             except Exception as e:
                 self.__retry_no += 1
                 logger.error(
-                    f"Failed for the {self.__retry_no} time to fetch data from {url}. Sleeping for 10 seconds before retry. " +
-                    f"Exception: {e}"
+                    f"Failed for the {self.__retry_no} time to fetch data from {url}. Sleeping for 10 seconds before retry. "
+                    + f"Exception: {e}"
                 )
                 time.sleep(10)
 
-        raise Exception(f"Failed to fetch data from {url} within {self.__retries} retries.")
+        raise Exception(
+            f"Failed to fetch data from {url} within {self.__retries} retries."
+        )

@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from utils import Tables, sql, types
+from utils import Tables, sql, Types
 
 
 def __map_markets(df: pd.DataFrame) -> pd.DataFrame:
@@ -18,7 +18,6 @@ def __map_markets(df: pd.DataFrame) -> pd.DataFrame:
             results.append(result)
 
     df = pd.DataFrame(results)
-    df["date"] = df["date"].dt.strftime("%y-%m-%d %H:00:00")
 
     return df.drop_duplicates(["date", "symbol"], keep="first")
 
@@ -77,8 +76,8 @@ def run_curated_markets_pipeline(max_date: pd.Timestamp = None):
     markets = __map_markets(raw)
     latest_markets = markets.drop_duplicates(["symbol"], keep="last")
     dtype = {
-        "date": types.DATETIME,
-        "symbol": types.NVARCHAR(5),
+        "date": Types.DateTime,
+        "symbol": Types.String(5),
     }
 
     sql.save(markets, Tables.MARKETS_HISTORY, dtype=dtype)
