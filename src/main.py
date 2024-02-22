@@ -4,11 +4,17 @@ import coloredlogs
 import argparse
 
 import pipelines
-from config import API_URL, INDEXER_DB_SQL_CONNECTION_STRING, SQL_CONNECTION_STRING
+from config import (
+    API_URL,
+    INDEXER_DB_SQL_CONNECTION_STRING,
+    ANALYTICS_DB_SQL_CONNECTION_STRING,
+    ATHENA_DB,
+)
 
 coloredlogs.install()
 logging.info(
-    f"Going to read data from '{API_URL}' and indexer db '{INDEXER_DB_SQL_CONNECTION_STRING.split('@')[-1]}' and write it into '{SQL_CONNECTION_STRING.split('@')[-1]}'"
+    f"Going to read data from '{API_URL}' and indexer db '{INDEXER_DB_SQL_CONNECTION_STRING.split('@')[-1]}' "
+    + f"and write it into '{ANALYTICS_DB_SQL_CONNECTION_STRING.split('@')[-1]}' PgSQL DB and {ATHENA_DB} Athena DB."
 )
 
 if __name__ == "__main__":

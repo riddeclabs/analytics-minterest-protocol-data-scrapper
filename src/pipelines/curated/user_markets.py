@@ -2,7 +2,9 @@ import logging
 
 import pandas as pd
 
-from utils import Tables, sql, types
+from utils import Tables, athena, Types, sql
+from itertools import groupby
+from tqdm.auto import tqdm
 
 
 def __map_user_markets(df: pd.DataFrame) -> pd.DataFrame:
@@ -21,7 +23,8 @@ def __map_user_markets(df: pd.DataFrame) -> pd.DataFrame:
             results.append(result)
 
     df = pd.DataFrame(results)
-    df["date"] = df["date"].dt.strftime("%y-%m-%d %H:00:00")
+    df.insert(1, "time", pd.to_datetime(df["date"]))
+    df["date"] = df["time"].dt.floor("d")
 
     return df.drop_duplicates(["date", "user_address", "symbol"], keep="first")
 
@@ -53,30 +56,32 @@ def __map_user_market_data__(market: dict) -> dict:
 
 
 def run_curated_user_markets_pipeline(max_date: pd.Timestamp = None):
-    logging.info("Running curated user markets pipeline")
+    logging.info(f"Running curated user markets pipeline with max_date = {max_date}")
 
-    raw = sql.get_unprocessed_raw_data(
-        table_name=Tables.USER_MARKETS_HISTORY,
-        raw_table_name=Tables.RAW_USERS,
-        max_date=max_date,
-    )
+    latest_date = sql.get_latest_date(Tables.USER_MARKETS_HISTORY, date_column="time")
+    all_dates = athena.get_all_dates(Tables.RAW_USERS, min_date=latest_date)
+    dates = [
+        max(group) for _, group in groupby(sorted(all_dates), key=lambda x: x.date())
+    ]
 
-    if raw.empty:
-        logging.info("No raw users found to process")
+    if not dates:
+        logging.info("No raw user markets found to process")
         return
 
-    dates = raw["date"].unique()
-    logging.info(f"Found {len(dates)} raw users records to process from {dates[0]}")
+    logging.info(
+        f"Found {len(dates)} user market records to process from {dates[0]} to {dates[-1]}"
+    )
 
-    users = __map_user_markets(raw)
-    latest_users = users.drop_duplicates(["user_address", "symbol"], keep="last")
-    dtype = {
-        "date": types.DATETIME,
-        "user_address": types.NVARCHAR(64),
-        "symbol": types.NVARCHAR(5),
-    }
+    for date in tqdm(dates):
+        raw = athena.read_partition(Tables.RAW_USERS, date)
+        users = __map_user_markets(raw)
+        dtype = {
+            "date": Types.Date,
+            "time": Types.DateTime,
+        }
 
-    sql.save(users, Tables.USER_MARKETS_HISTORY, dtype=dtype)
-    sql.save(latest_users, Tables.USER_MARKETS_LATEST, dtype=dtype, replace=True)
+        sql.save(users, Tables.USER_MARKETS_HISTORY, dtype=dtype, replace_by_date=True)
 
-    logging.info(f"Successfully saved {len(users)} user market records into curated DB")
+    sql.save(users, Tables.USER_MARKETS_LATEST, dtype=dtype, replace=True)
+
+    logging.info(f"Successfully saved {len(dates)} user market records into curated DB")

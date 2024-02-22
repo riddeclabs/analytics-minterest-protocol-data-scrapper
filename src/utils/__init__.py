@@ -1,7 +1,6 @@
-from sqlalchemy import types
-
-from . import env, sql
+from . import athena, env
 from .data_fetcher import DataFetcher
+from .types import Types
 
 
 class Tables:
@@ -18,3 +17,5 @@ class Tables:
 
     RAW_ORACLE_PRICES = "raw_oracle_prices"
     ORACLE_PRICES = "oracle_prices"
+
+    USER_TRANSACTIONS = "user_transactions"
