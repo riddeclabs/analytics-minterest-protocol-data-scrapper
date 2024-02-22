@@ -2,3 +2,4 @@ from .markets import run_curated_markets_pipeline
 from .oracle_prices import run_curated_oracle_prices_pipeline
 from .user_markets import run_curated_user_markets_pipeline
 from .users import run_curated_users_pipeline
+from .user_transactions import run_curated_user_transactions_pipeline
