@@ -11,7 +11,7 @@ def __map_user_markets(df: pd.DataFrame) -> pd.DataFrame:
     results = []
 
     for record in df.to_dict("records"):
-        if "error" in record["data"] or "error" in record["data"]["withdraw"]:
+        if "error" in record["data"] or "error" in record["data"].get("withdraw", {}):
             logging.info(f"Found failed user query: {record}")
             continue
 
