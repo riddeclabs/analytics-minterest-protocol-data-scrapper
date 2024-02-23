@@ -4,6 +4,7 @@ from .curated import (
     run_curated_user_markets_pipeline,
     run_curated_users_pipeline,
     run_curated_user_transactions_pipeline,
+    run_curated_nft_transactions_pipeline,
 )
 from .raw import (
     run_raw_markets_pipeline,

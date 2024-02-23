@@ -19,3 +19,4 @@ class Tables:
     ORACLE_PRICES = "oracle_prices"
 
     USER_TRANSACTIONS = "user_transactions"
+    NFT_TRANSACTIONS = "nft_transactions"

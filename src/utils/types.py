@@ -7,3 +7,5 @@ class Types:
     Date = types.Date
     String = types.String
     JSON = JSONB
+    Int = types.Integer
+    Double = types.Double

@@ -36,3 +36,25 @@ def get_all_user_transactions() -> pd.DataFrame:
     )
 
     return df
+
+
+def get_all_nft_transactions() -> pd.DataFrame:
+    df = pd.read_sql(
+        f"""
+            select 
+                to_timestamp(br.timestamp) at time zone 'utc' date,
+                nft.id,
+                nft.owner,
+                nft.amount,
+                case 
+                    when (count(nft.owner) over(partition by nft.id order by nft.block desc) = 1) then true
+                    else false
+                end as is_latest
+            from nft_ownership_state nft
+            join block_record br on nft.block = br.number
+            order by date
+        """,
+        con=__ENGINE,
+    )
+
+    return df
