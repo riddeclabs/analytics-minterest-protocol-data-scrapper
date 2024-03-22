@@ -1,5 +1,6 @@
 import logging
-from utils import Tables, sql, Types
+
+from utils import Tables, Types, sql
 from data import indexer_data
 
 

@@ -4,3 +4,4 @@ from .user_markets import run_curated_user_markets_pipeline
 from .users import run_curated_users_pipeline
 from .user_transactions import run_curated_user_transactions_pipeline
 from .nft_transactions import run_curated_nft_transactions_pipeline
+from .liquidations import run_curated_liquidations_pipeline
