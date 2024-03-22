@@ -1,8 +1,8 @@
 import pandas as pd
 from sqlalchemy import create_engine
 
-from config import INDEXER_DB_SQL_CONNECTION_STRING
 
+from config import INDEXER_DB_SQL_CONNECTION_STRING
 
 __ENGINE = create_engine(INDEXER_DB_SQL_CONNECTION_STRING)
 
@@ -17,7 +17,7 @@ def get_all_user_addresses() -> list[str]:
 
 def get_all_user_transactions() -> pd.DataFrame:
     df = pd.read_sql(
-        f"""
+        """
             select 
                 er.user_address,
                 to_timestamp(br.timestamp) at time zone 'utc' date,
@@ -40,14 +40,14 @@ def get_all_user_transactions() -> pd.DataFrame:
 
 def get_all_nft_transactions() -> pd.DataFrame:
     df = pd.read_sql(
-        f"""
+        """
             select 
                 to_timestamp(br.timestamp) at time zone 'utc' date,
                 nft.id,
                 nft.owner,
                 nft.amount,
                 case 
-                    when (count(nft.owner) over(partition by nft.id order by nft.block desc) = 1) then true
+                    when (row_number() over(partition by nft.id, nft.owner order by nft.block desc) = 1) then true
                     else false
                 end as is_latest
             from nft_ownership_state nft
