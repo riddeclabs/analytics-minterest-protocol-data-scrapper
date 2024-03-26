@@ -78,6 +78,7 @@ def get_all_liquidations() -> pd.DataFrame:
             )
             select 
                 le.liquidation_timestamp as date,
+                le.id as liquidation_id,
                 le.transaction_hash as tx_hash,
                 sm.symbol as seize_market,
                 seize_amount_underlying / pow(10, sm.underlying_decimals) as seize_amount,

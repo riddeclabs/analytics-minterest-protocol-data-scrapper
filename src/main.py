@@ -50,3 +50,4 @@ if __name__ == "__main__":
     pipelines.run_curated_user_markets_pipeline(max_date=args.max_date)
     pipelines.run_curated_user_transactions_pipeline()
     pipelines.run_curated_nft_transactions_pipeline()
+    pipelines.run_curated_liquidations_pipeline()
