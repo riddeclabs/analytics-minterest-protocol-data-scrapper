@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from utils import Tables, sql, Types
+from utils import Tables, sql
 
 
 def __map_oracle_prices(df: pd.DataFrame) -> pd.DataFrame:

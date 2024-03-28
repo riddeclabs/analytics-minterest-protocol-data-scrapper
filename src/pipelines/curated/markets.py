@@ -4,17 +4,28 @@ import pandas as pd
 
 from utils import Tables, sql, Types
 
+def __get_oracle_prices() -> pd.DataFrame:
+    query = "SELECT * FROM oracle_prices"
+    prices = sql.read(query)
 
-def __map_markets(df: pd.DataFrame) -> pd.DataFrame:
+    return prices
+
+def __map_markets(df: pd.DataFrame, oracle_prices: pd.DataFrame) -> pd.DataFrame:
     results = []
 
     for record in df.to_dict("records"):
+        prices = (
+            oracle_prices[oracle_prices["date"] <= record["date"]]
+                .sort_values(by="date", ascending=False)
+                .to_dict("records")[0]
+        )
+
         if "error" in record["data"]:
             logging.info(f"Found failed market query: {record}")
             continue
 
         for market in record["data"]["markets"]:
-            result = {"date": record["date"]} | __map_market_data(market)
+            result = {"date": record["date"]} | __map_market_data(market, prices)
             results.append(result)
 
     df = pd.DataFrame(results)
@@ -22,7 +33,7 @@ def __map_markets(df: pd.DataFrame) -> pd.DataFrame:
     return df.drop_duplicates(["date", "symbol"], keep="first")
 
 
-def __map_market_data(market: dict) -> dict:
+def __map_market_data(market: dict, prices: dict):
     values = {}
 
     for key in market["economic"]:
@@ -40,6 +51,11 @@ def __map_market_data(market: dict) -> dict:
         "locked": values["marketValueLocked"],
         "locked_usd": values["marketValueLockedUSD"],
         "reserves": values["marketReservesUnderlying"],
+        "reserves_usd": round(
+            float(market["economic"]["marketReservesUnderlying"])
+                * float(prices[market["meta"]["symbol"]]),
+            4
+        ),
         "apy": values["apy"],
         "apr": values["apr"],
         "mnt_supply_apy": values["marketMntSupplyAPY"],
@@ -73,7 +89,10 @@ def run_curated_markets_pipeline(max_date: pd.Timestamp = None):
     dates = raw["date"].unique()
     logging.info(f"Found {len(dates)} raw markets records to process from {dates[0]}")
 
-    markets = __map_markets(raw)
+    oracle_prices = __get_oracle_prices()
+    logging.info(f"Found {len(oracle_prices)} oracle prices records")
+
+    markets = __map_markets(raw, oracle_prices)
     latest_markets = markets.drop_duplicates(["symbol"], keep="last")
     dtype = {
         "date": Types.DateTime,
