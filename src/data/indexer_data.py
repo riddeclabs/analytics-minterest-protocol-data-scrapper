@@ -88,18 +88,18 @@ def get_all_liquidations() -> pd.DataFrame:
                 le.is_debt_healthy,
                 la.est_max_fee_per_gas_wei,
                 la.est_max_priority_fee_per_gas_wei,
-                la.est_raw_profit_usd / pow(10, 18) as est_raw_profit_usd,
-                la.est_net_profit_usd / 10e18 as est_net_profit_usd,
-                la.actual_net_profit_usd / 10e18 as actual_net_profit_usd,
+                la.est_raw_profit_usd / pow(10, 17) as est_raw_profit_usd,
+                la.est_net_profit_usd / 10e17 as est_net_profit_usd,
+                la.actual_net_profit_usd / 10e17 as actual_net_profit_usd,
                 la.est_gas_used_liquidation,
                 la.actual_gas_used_liquidation,
-                la.est_gas_fee_liquidation_usd / pow(10, 18) as est_gas_fee_liquidation_usd,
+                la.est_gas_fee_liquidation_usd / pow(10, 17) as est_gas_fee_liquidation_usd,
                 la.actual_gas_price_wei,
-                la.actual_gas_fee_liquidation_eth / 10e18 as actual_gas_fee_liquidation_tokens,
-                la.actual_gas_fee_liquidation_usd / 10e18 as actual_gas_fee_liquidation_usd,
-                la.eth_price_usd / 10e18 as eth_price_usd,
-                la.healthy_factor_before / 10e18 as healthy_factor_before,
-                la.healthy_factor_after / 10e18 as healthy_factor_after
+                la.actual_gas_fee_liquidation_eth / 10e17 as actual_gas_fee_liquidation_tokens,
+                la.actual_gas_fee_liquidation_usd / 10e17 as actual_gas_fee_liquidation_usd,
+                la.eth_price_usd / 10e17 as eth_price_usd,
+                la.healthy_factor_before / 10e17 as healthy_factor_before,
+                la.healthy_factor_after / 10e17 as healthy_factor_after
             from liquidation_event le
             left join liquidation_accounting la using(transaction_hash)
             join market_info sm on le.seize_market = sm.address
