@@ -20,3 +20,4 @@ RETRIES_COUNT_FOR_USERS_FETCHING = int(
 ATHENA_BUCKET = env.get_required("ATHENA_BUCKET")
 ATHENA_DB = env.get_required("ATHENA_DB")
 AWS_REGIONS = env.get_optional("AWS_REGIONS", "eu-central-1")
+IS_MANTLE_NETWORK = "mantle" in API_URL

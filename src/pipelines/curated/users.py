@@ -1,6 +1,7 @@
 import logging
 
 import pandas as pd
+from datetime import datetime
 
 from utils import Tables, Types, s3, sql
 from itertools import groupby
@@ -63,6 +64,9 @@ def __map_user_data(user: dict) -> dict:
         "total_earned_mnt_usd": (
             round(total_earned_mnt * mnt_price, 4) if total_earned_mnt else None
         ),
+        "vested": round(float(user["vesting"]["vested"]), 4),
+        "vesting_start_date": datetime.fromtimestamp(user["vesting"]["start"] * 60) if user["vesting"]["start"] else None,
+        "vesting_end_date": datetime.fromtimestamp(user["vesting"]["end"] * 60) if user["vesting"]["end"] else None,
     }
 
     # Do it for mantle market only
