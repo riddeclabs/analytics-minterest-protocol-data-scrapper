@@ -22,3 +22,5 @@ class Tables:
     USER_TRANSACTIONS = "user_transactions"
     NFT_TRANSACTIONS = "nft_transactions"
     LIQUIDATIONS = "liquidations"
+
+    PIPELINES_STATUS = "pipelines_status"
