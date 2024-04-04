@@ -9,6 +9,7 @@ from config import (
     INDEXER_DB_SQL_CONNECTION_STRING,
     ANALYTICS_DB_SQL_CONNECTION_STRING,
     ATHENA_DB,
+    IS_MANTLE_NETWORK
 )
 
 coloredlogs.install()
@@ -50,4 +51,6 @@ if __name__ == "__main__":
     pipelines.run_curated_user_markets_pipeline(max_date=args.max_date)
     pipelines.run_curated_user_transactions_pipeline()
     pipelines.run_curated_nft_transactions_pipeline()
-    pipelines.run_curated_liquidations_pipeline()
+
+    if IS_MANTLE_NETWORK:
+        pipelines.run_curated_liquidations_pipeline()

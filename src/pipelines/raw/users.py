@@ -1,6 +1,5 @@
 import logging
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
 
 import pandas as pd
 from tqdm import tqdm
@@ -9,7 +8,7 @@ from config import (
     MAX_TREADS_FOR_USERS_FETCHING,
     RETRIES_COUNT_FOR_USERS_FETCHING,
 )
-from utils import DataFetcher, Tables, athena
+from utils import DataFetcher, Tables, s3, sql
 from data import indexer_data
 
 from .oracle_prices import __get_oracle_prices__
@@ -38,18 +37,17 @@ def __get_raw_user_data(
     return user_data
 
 
-def __save_raw_users(addresses: list[str], users: list[dict]) -> int:
+def __save_raw_users(addresses: list[str], users: list[dict]) -> None:
     df = pd.DataFrame(
         {
-            "date": pd.to_datetime(
-                datetime.utcnow().replace(minute=0, second=0, microsecond=0)
-            ),
+            "date": pd.Timestamp.utcnow().replace(minute=0, second=0, microsecond=0),
             "user_address": addresses,
             "data": users,
         }
     )
 
-    return athena.save(df, Tables.RAW_USERS)
+    s3.save(df, Tables.RAW_USERS)
+    sql.save(df, Tables.RAW_USERS_LATEST, replace=True)
 
 
 def __fetch_user_data() -> tuple[list[str], list[dict]]:
@@ -79,8 +77,8 @@ def __fetch_user_data() -> tuple[list[str], list[dict]]:
 def run_raw_users_pipeline(force: bool = False):
     logging.info(f"Running raw users pipeline with force flag = {force}")
 
-    now = datetime.utcnow().replace(minute=0, second=0, microsecond=0)
-    latest_date = athena.get_latest_date(Tables.RAW_USERS)
+    now = pd.Timestamp.utcnow().replace(minute=0, second=0, microsecond=0).tz_convert(None)
+    latest_date = s3.get_latest_date(Tables.RAW_USERS)
 
     logging.info(f"Latest date for users data in DB: {latest_date}")
 

@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from utils import Tables, athena, Types, sql
+from utils import Tables, Types, s3, sql
 from itertools import groupby
 from tqdm.auto import tqdm
 
@@ -59,7 +59,7 @@ def run_curated_user_markets_pipeline(max_date: pd.Timestamp = None):
     logging.info(f"Running curated user markets pipeline with max_date = {max_date}")
 
     latest_date = sql.get_latest_date(Tables.USER_MARKETS_HISTORY, date_column="time")
-    all_dates = athena.get_all_dates(Tables.RAW_USERS, min_date=latest_date)
+    all_dates = s3.get_all_dates(Tables.RAW_USERS, min_date=latest_date)
     dates = [
         max(group) for _, group in groupby(sorted(all_dates), key=lambda x: x.date())
     ]
@@ -73,7 +73,7 @@ def run_curated_user_markets_pipeline(max_date: pd.Timestamp = None):
     )
 
     for date in tqdm(dates):
-        raw = athena.read_partition(Tables.RAW_USERS, date)
+        raw = s3.read_partition(Tables.RAW_USERS, date)
         users = __map_user_markets(raw)
         dtype = {
             "date": Types.Date,

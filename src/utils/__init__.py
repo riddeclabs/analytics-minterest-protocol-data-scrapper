@@ -1,4 +1,4 @@
-from . import athena, env
+from . import env, s3
 from .data_fetcher import DataFetcher
 from .types import Types
 
@@ -9,6 +9,7 @@ class Tables:
     MARKETS_LATEST = "markets_latest"
 
     RAW_USERS = "raw_users"
+    RAW_USERS_LATEST = "raw_users_latest"
     USERS_HISTORY = "users_history"
     USERS_LATEST = "users_latest"
 
