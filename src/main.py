@@ -73,6 +73,8 @@ if __name__ == "__main__":
 
         if IS_MANTLE_NETWORK:
             pipelines.run_curated_liquidations_pipeline()
+        else:
+            pipelines.run_curated_vesting_refund_poll_pipeline()
 
         report_pipeline_status(start, "success")
     except KeyboardInterrupt:

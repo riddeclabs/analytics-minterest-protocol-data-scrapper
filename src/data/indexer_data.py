@@ -109,3 +109,21 @@ def get_all_liquidations() -> pd.DataFrame:
     )
 
     return df
+
+
+def get_all_vesting_refund_poll_records() -> pd.DataFrame:
+    df = pd.read_sql(
+        """
+            SELECT 
+                user_address,
+                round(initial_investment_usd / 1e18, 4) as initial_investment_usd,
+                round(current_balance_minty / 1e18, 4) as current_balance_minty,
+                round(offered_balance_minty / 1e18, 4) as offered_balance_minty,
+                choice,
+                signed_message
+            FROM public.vesting_refund_poll
+        """,
+        con=INDEXER_DB_SQL_CONNECTION_STRING,
+    )
+
+    return df

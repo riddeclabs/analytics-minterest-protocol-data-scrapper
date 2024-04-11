@@ -5,3 +5,4 @@ from .users import run_curated_users_pipeline
 from .user_transactions import run_curated_user_transactions_pipeline
 from .nft_transactions import run_curated_nft_transactions_pipeline
 from .liquidations import run_curated_liquidations_pipeline
+from .vesting_refund_poll import run_curated_vesting_refund_poll_pipeline
