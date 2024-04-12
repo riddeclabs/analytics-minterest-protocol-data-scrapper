@@ -120,6 +120,8 @@ def get_all_vesting_refund_poll_records() -> pd.DataFrame:
                 round(current_balance_minty / 1e18, 4) as current_balance_minty,
                 round(offered_balance_minty / 1e18, 4) as offered_balance_minty,
                 choice,
+                created_at,
+                updated_at,
                 signed_message
             FROM public.vesting_refund_poll
         """,

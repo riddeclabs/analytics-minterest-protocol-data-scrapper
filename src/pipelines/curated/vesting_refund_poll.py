@@ -25,6 +25,8 @@ def run_curated_vesting_refund_poll_pipeline():
     df = __map_vesting_refund_poll_records(raw)
     dtype = {
         "signed_message": Types.String(1024),
+        "created_at": Types.DateTime(),
+        "updated_at": Types.DateTime(),
     }
 
     sql.save(df, Tables.VESTING_REFUND_POLL, dtype=dtype, replace=True)
