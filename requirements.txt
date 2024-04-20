@@ -7,6 +7,7 @@ psycopg2-binary==2.9.9
 python-dotenv==1.0.1
 coloredlogs==15.0.1
 awswrangler==3.6.0
+google_spreadsheet==0.0.6
 
 # Development only
 pylint==2.17.0

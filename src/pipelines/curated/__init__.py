@@ -6,3 +6,6 @@ from .user_transactions import run_curated_user_transactions_pipeline
 from .nft_transactions import run_curated_nft_transactions_pipeline
 from .liquidations import run_curated_liquidations_pipeline
 from .vesting_refund_poll import run_curated_vesting_refund_poll_pipeline
+from .cs_issues_tracker import (
+    run_curated_cs_issues_tracker_google_sheets_export_pipeline,
+)

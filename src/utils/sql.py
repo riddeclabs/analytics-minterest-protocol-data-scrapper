@@ -14,9 +14,11 @@ def read(sql: str) -> pd.DataFrame:
     return pd.read_sql_query(sql, con=__ENGINE)
 
 
-def __create_dtypes(df: pd.DataFrame, dtype: dict[str, any] = {}) -> dict[str, any]:
+def __create_dtypes(
+    df: pd.DataFrame, dtype: dict[str, any] = {}, default_str_length: int = 64
+) -> dict[str, any]:
     result = {
-        column: Types.String(length=64)
+        column: Types.String(length=default_str_length)
         for column, dtype in df.dtypes.items()
         if dtype in [pd.StringDtype]
     }
@@ -33,10 +35,13 @@ def __create_dtypes(df: pd.DataFrame, dtype: dict[str, any] = {}) -> dict[str, a
 def save(
     df: pd.DataFrame,
     table_name: str,
+    schema: str = "public",
     dtype: dict[str, any] = {},
     replace: bool = False,
     replace_by_date: bool = False,
+    default_str_length: int = 64,
 ) -> int:
+
     with __ENGINE.begin() as connection:
         if replace_by_date and inspect(connection).has_table(table_name):
             values = ", ".join(df["date"].map(lambda x: f"'{x}'").unique())
@@ -49,7 +54,8 @@ def save(
             con=connection,
             if_exists="replace" if replace else "append",
             index=False,
-            dtype=__create_dtypes(df, dtype),
+            schema=schema,
+            dtype=__create_dtypes(df, dtype, default_str_length),
         )
 
 

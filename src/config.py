@@ -1,6 +1,7 @@
 import json
 
 from utils import env
+from base64 import b64decode
 
 if env.get_optional("SECRETS"):
     for key, value in json.loads(env.get_required("SECRETS")).items():
@@ -21,3 +22,14 @@ ATHENA_BUCKET = env.get_required("ATHENA_BUCKET")
 ATHENA_DB = env.get_required("ATHENA_DB")
 AWS_REGIONS = env.get_optional("AWS_REGIONS", "eu-central-1")
 IS_MANTLE_NETWORK = "mantle" in API_URL
+
+if not IS_MANTLE_NETWORK:
+    GOOGLE_CLOUD_CREDENTIALS = json.loads(
+        b64decode(env.get_required("GOOGLE_CLOUD_CREDENTIALS"))
+    )
+    CS_ISSUES_TRACKER_GOOGLE_SHEETS_ID = env.get_required(
+        "CS_ISSUES_TRACKER_GOOGLE_SHEETS_ID"
+    )
+else:
+    GOOGLE_CLOUD_CREDENTIALS = None
+    CS_ISSUES_TRACKER_GOOGLE_SHEETS_ID = None

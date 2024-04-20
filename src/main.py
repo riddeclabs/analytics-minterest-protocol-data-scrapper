@@ -12,7 +12,7 @@ from config import (
     INDEXER_DB_SQL_CONNECTION_STRING,
     ANALYTICS_DB_SQL_CONNECTION_STRING,
     ATHENA_DB,
-    IS_MANTLE_NETWORK
+    IS_MANTLE_NETWORK,
 )
 
 coloredlogs.install()
@@ -21,16 +21,21 @@ logging.info(
     + f"and write it into '{ANALYTICS_DB_SQL_CONNECTION_STRING.split('@')[-1]}' PgSQL DB and {ATHENA_DB} Athena DB."
 )
 
+
 def report_pipeline_status(start_date: float, status: str):
     duration_mins = round((time.time() - start_date) / 60, 1)
-    logging.info(f"Finished running all pipelines in {duration_mins} seconds with status '{status}'")
+    logging.info(
+        f"Finished running all pipelines in {duration_mins} minutes with status '{status}'"
+    )
 
-    df = pd.DataFrame({
-        "start_date": [pd.Timestamp(start_date * 1e9)],
-        "duration_mins": [duration_mins],
-        "status": [status],
-    })
-    
+    df = pd.DataFrame(
+        {
+            "start_date": [pd.Timestamp(start_date * 1e9)],
+            "duration_mins": [duration_mins],
+            "status": [status],
+        }
+    )
+
     sql.save(df, Tables.PIPELINES_STATUS)
 
 
@@ -75,6 +80,7 @@ if __name__ == "__main__":
             pipelines.run_curated_liquidations_pipeline()
         else:
             pipelines.run_curated_vesting_refund_poll_pipeline()
+            pipelines.run_curated_cs_issues_tracker_google_sheets_export_pipeline()
 
         report_pipeline_status(start, "success")
     except KeyboardInterrupt:

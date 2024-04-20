@@ -1,4 +1,4 @@
-from . import env, s3
+from . import env, s3, google_sheets, formatting
 from .data_fetcher import DataFetcher
 from .types import Types
 
@@ -23,5 +23,7 @@ class Tables:
     NFT_TRANSACTIONS = "nft_transactions"
     LIQUIDATIONS = "liquidations"
     VESTING_REFUND_POLL = "vesting_refund_poll"
+
+    CS_ISSUES_TRACKER_SCHEMA_NAME = "cs_issues_tracker"
 
     PIPELINES_STATUS = "pipelines_status"
