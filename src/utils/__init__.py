@@ -26,5 +26,6 @@ class Tables:
     VESTING_REFUND_POLL = "vesting_refund_poll"
 
     CS_ISSUES_TRACKER_SCHEMA_NAME = "cs_issues_tracker"
+    MOSSBETS_SCHEMA_NAME = "mossbets"
 
     PIPELINES_STATUS = "pipelines_status"

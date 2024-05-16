@@ -23,12 +23,9 @@ ATHENA_DB = env.get_required("ATHENA_DB")
 AWS_REGIONS = env.get_optional("AWS_REGIONS", "eu-central-1")
 IS_MANTLE_NETWORK = "mantle" in API_URL
 
-if not IS_MANTLE_NETWORK:
-    GOOGLE_CLOUD_CREDENTIALS = json.loads(
-        b64decode(env.get_required("GOOGLE_CLOUD_CREDENTIALS"))
-    )
-else:
-    GOOGLE_CLOUD_CREDENTIALS = None
+GOOGLE_CLOUD_CREDENTIALS = json.loads(
+    b64decode(env.get_required("GOOGLE_CLOUD_CREDENTIALS"))
+)
 
 CS_ISSUES_TRACKER_GOOGLE_SHEETS_ID = "1rO-O1V9MJFEkFoTI6Or_s5ACiaLbICq_5F5jpUks_Lo"
 MINTEREST_NFT_OVERVIEW_GOOGLE_SHEETS_ID = "1Z4XZc78IvmCe87PfTJ7rp-T6yMdul2HqvVnEaCueS04"

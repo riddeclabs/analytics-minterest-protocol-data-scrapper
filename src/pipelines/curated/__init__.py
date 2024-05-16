@@ -10,3 +10,6 @@ from .cs_issues_tracker import (
     run_curated_cs_issues_tracker_google_sheets_export_pipeline,
 )
 from .nft_tiers import run_curated_nft_tiers_pipeline
+from .mossbets_user_data import (
+    run_curated_mossbets_user_data_google_sheets_export_pipeline,
+)

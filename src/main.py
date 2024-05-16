@@ -82,6 +82,7 @@ if __name__ == "__main__":
         else:
             pipelines.run_curated_vesting_refund_poll_pipeline()
             pipelines.run_curated_cs_issues_tracker_google_sheets_export_pipeline()
+            pipelines.run_curated_mossbets_user_data_google_sheets_export_pipeline()
 
         report_pipeline_status(start, "success")
     except KeyboardInterrupt:
