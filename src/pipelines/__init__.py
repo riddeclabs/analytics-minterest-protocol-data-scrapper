@@ -8,6 +8,7 @@ from .curated import (
     run_curated_liquidations_pipeline,
     run_curated_vesting_refund_poll_pipeline,
     run_curated_cs_issues_tracker_google_sheets_export_pipeline,
+    run_curated_nft_tiers_pipeline,
 )
 from .raw import (
     run_raw_markets_pipeline,

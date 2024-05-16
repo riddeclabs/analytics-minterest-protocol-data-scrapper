@@ -9,3 +9,4 @@ from .vesting_refund_poll import run_curated_vesting_refund_poll_pipeline
 from .cs_issues_tracker import (
     run_curated_cs_issues_tracker_google_sheets_export_pipeline,
 )
+from .nft_tiers import run_curated_nft_tiers_pipeline
