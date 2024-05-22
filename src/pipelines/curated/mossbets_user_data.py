@@ -1,9 +1,10 @@
 import logging
 
-from utils import Tables, sql, google_sheets, formatting
+from utils import Tables, sql, google_sheets, formatting, Types
 from config import MOSSBETS_USER_DATA_GOOGLE_SHEETS_ID
 
-SHEETS_TO_SAVE = ["Raw data"]
+SHEETS_TO_SAVE = ["Raw data", "New data"]
+STRING_COLUMNS = ["month", "week", "date"]
 
 
 def run_curated_mossbets_user_data_google_sheets_export_pipeline():
@@ -15,13 +16,20 @@ def run_curated_mossbets_user_data_google_sheets_export_pipeline():
     for sheet_name in SHEETS_TO_SAVE:
         df = data[sheet_name]
         df.columns = [formatting.to_snake_case(column) for column in df.columns]
+        for column in df.columns:
+            df[column] = (
+                df[column]
+                .replace({",": "", "€": "", "%": ""}, regex=True)
+                .astype(float, errors="ignore")
+            )
 
         sql.save(
             df,
             formatting.to_snake_case(sheet_name),
             schema=Tables.MOSSBETS_SCHEMA_NAME,
             replace=True,
-            default_str_length=512,
+            default_str_length=256,
+            dtype={"date": Types.String(20)},
         )
 
         logging.info(
