@@ -1,4 +1,5 @@
 import logging
+import pandas as pd
 
 from utils import Tables, sql, google_sheets, formatting, Types
 from config import MOSSBETS_USER_DATA_GOOGLE_SHEETS_ID
@@ -23,13 +24,16 @@ def run_curated_mossbets_user_data_google_sheets_export_pipeline():
                 .astype(float, errors="ignore")
             )
 
+        if "date" in df.columns:
+            df["date"] = pd.to_datetime(df["date"], errors="coerce")
+
         sql.save(
             df,
             formatting.to_snake_case(sheet_name),
             schema=Tables.MOSSBETS_SCHEMA_NAME,
             replace=True,
             default_str_length=256,
-            dtype={"date": Types.String(20)},
+            dtype={"date": Types.Date},
         )
 
         logging.info(
