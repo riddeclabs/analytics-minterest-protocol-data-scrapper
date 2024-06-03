@@ -13,6 +13,8 @@ from config import (
     ANALYTICS_DB_SQL_CONNECTION_STRING,
     ATHENA_DB,
     IS_MANTLE_NETWORK,
+    IS_TAIKO_NETWORK,
+    IS_ETHEREUM_NETWORK,
 )
 
 coloredlogs.install()
@@ -69,17 +71,17 @@ if __name__ == "__main__":
             pipelines.run_raw_oracle_prices_pipeline(force=args.force)
             pipelines.run_raw_users_pipeline(force=args.force)
 
-        pipelines.run_curated_markets_pipeline(max_date=args.max_date)
         pipelines.run_curated_oracle_prices_pipeline(max_date=args.max_date)
+        pipelines.run_curated_markets_pipeline(max_date=args.max_date)
         pipelines.run_curated_users_pipeline(max_date=args.max_date)
         pipelines.run_curated_user_markets_pipeline(max_date=args.max_date)
         pipelines.run_curated_user_transactions_pipeline()
-        pipelines.run_curated_nft_transactions_pipeline()
         pipelines.run_curated_nft_tiers_pipeline()
+        pipelines.run_curated_nft_transactions_pipeline()
 
         if IS_MANTLE_NETWORK:
             pipelines.run_curated_liquidations_pipeline()
-        else:
+        elif IS_ETHEREUM_NETWORK:
             pipelines.run_curated_vesting_refund_poll_pipeline()
             pipelines.run_curated_cs_issues_tracker_google_sheets_export_pipeline()
             pipelines.run_curated_mossbets_user_data_google_sheets_export_pipeline()

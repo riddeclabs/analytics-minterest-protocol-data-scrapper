@@ -22,6 +22,8 @@ ATHENA_BUCKET = env.get_required("ATHENA_BUCKET")
 ATHENA_DB = env.get_required("ATHENA_DB")
 AWS_REGIONS = env.get_optional("AWS_REGIONS", "eu-central-1")
 IS_MANTLE_NETWORK = "mantle" in API_URL
+IS_TAIKO_NETWORK = "taiko" in API_URL
+IS_ETHEREUM_NETWORK = not IS_MANTLE_NETWORK and not IS_TAIKO_NETWORK
 
 GOOGLE_CLOUD_CREDENTIALS = json.loads(
     b64decode(env.get_required("GOOGLE_CLOUD_CREDENTIALS"))
