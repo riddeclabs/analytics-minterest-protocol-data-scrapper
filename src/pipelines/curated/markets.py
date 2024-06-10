@@ -4,11 +4,13 @@ import pandas as pd
 
 from utils import Tables, sql, Types
 
+
 def __get_oracle_prices() -> pd.DataFrame:
     query = "SELECT * FROM oracle_prices"
     prices = sql.read(query)
 
     return prices
+
 
 def __map_markets(df: pd.DataFrame, oracle_prices: pd.DataFrame) -> pd.DataFrame:
     results = []
@@ -16,8 +18,8 @@ def __map_markets(df: pd.DataFrame, oracle_prices: pd.DataFrame) -> pd.DataFrame
     for record in df.to_dict("records"):
         prices = (
             oracle_prices[oracle_prices["date"] <= record["date"]]
-                .sort_values(by="date", ascending=False)
-                .to_dict("records")[0]
+            .sort_values(by="date", ascending=False)
+            .to_dict("records")[0]
         )
 
         if "error" in record["data"]:
@@ -53,8 +55,8 @@ def __map_market_data(market: dict, prices: dict):
         "reserves": values["marketReservesUnderlying"],
         "reserves_usd": round(
             float(market["economic"]["marketReservesUnderlying"])
-                * float(prices[market["meta"]["symbol"]]),
-            4
+            * float(prices[market["meta"]["symbol"]]),
+            4,
         ),
         "apy": values["apy"],
         "apr": values["apr"],
@@ -96,7 +98,7 @@ def run_curated_markets_pipeline(max_date: pd.Timestamp = None):
     latest_markets = markets.drop_duplicates(["symbol"], keep="last")
     dtype = {
         "date": Types.DateTime,
-        "symbol": Types.String(5),
+        "symbol": Types.String(6),
     }
 
     sql.save(markets, Tables.MARKETS_HISTORY, dtype=dtype)
