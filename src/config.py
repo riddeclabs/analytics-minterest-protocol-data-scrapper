@@ -13,7 +13,7 @@ ANALYTICS_DB_SQL_CONNECTION_STRING = env.get_required(
 )
 API_URL = env.get_required("API_URL")
 MAX_TREADS_FOR_USERS_FETCHING = int(
-    env.get_optional("MAX_TREADS_FOR_USERS_FETCHING", "10")
+    env.get_optional("MAX_TREADS_FOR_USERS_FETCHING", "5")
 )
 RETRIES_COUNT_FOR_USERS_FETCHING = int(
     env.get_optional("RETRIES_COUNT_FOR_USERS_FETCHING", "50")
