@@ -10,7 +10,7 @@
   "files.insertFinalNewline": true,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit"
+    "source.organizeImports": "never"
   },
   "python.testing.pytestArgs": [
     "."

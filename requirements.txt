@@ -11,3 +11,4 @@ google_spreadsheet==0.0.6
 # Development only
 pylint==2.17.0
 black==23.1.0
+pandas-stubs==2.2.2.240807
