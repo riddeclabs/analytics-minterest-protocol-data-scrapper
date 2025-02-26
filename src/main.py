@@ -11,16 +11,15 @@ from config import (
     API_URL,
     INDEXER_DB_SQL_CONNECTION_STRING,
     ANALYTICS_DB_SQL_CONNECTION_STRING,
-    ATHENA_DB,
+    S3_BUCKET,
     IS_MANTLE_NETWORK,
-    IS_TAIKO_NETWORK,
     IS_ETHEREUM_NETWORK,
 )
 
 coloredlogs.install()
 logging.info(
     f"Going to read data from '{API_URL}' and indexer db '{INDEXER_DB_SQL_CONNECTION_STRING.split('@')[-1]}' "
-    + f"and write it into '{ANALYTICS_DB_SQL_CONNECTION_STRING.split('@')[-1]}' PgSQL DB and {ATHENA_DB} Athena DB."
+    + f"and write it into '{ANALYTICS_DB_SQL_CONNECTION_STRING.split('@')[-1]}' PgSQL DB and {S3_BUCKET} s3 bucket."
 )
 
 
